@@ -1,0 +1,14 @@
+# Video source files & zip archives
+*.zip
+*.mp4
+CLIP1 FRAME.ZIP/
+CLIP 2 FRAME.ZIP/
+CLIP 3 FRAME.ZIP/
+FLOW CLIP FRAME/
+
+# Python helper scripts & cache
+convert_frames.py
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
