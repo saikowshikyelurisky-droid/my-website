@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NOCTIS — The City is Asleep</title>
-  <meta name="description" content="NOCTIS — A city in total blackout at night where the car's light is the only light in the world. Electric grand touring.">
+  <title>PORSCHE — Driven by Dreams</title>
+  <meta name="description" content="PORSCHE — A cinematic automotive visual experience. Total night immersion where the car's light is the only light in the world.">
   
-  <!-- Google Fonts: Archivo (width 125, weights 300/400), Inter (400), JetBrains Mono (400) -->
+  <!-- Google Fonts: Archivo (width 125, weights 300/400), Inter (400, 500), JetBrains Mono (400, 500) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,300..400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,300..500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -18,7 +18,7 @@
   <!-- Film Grain Overlay (offscreen noise tile shifted ~8fps, 3.5% opacity, no vignette) -->
   <canvas id="grain-canvas" aria-hidden="true"></canvas>
 
-  <!-- Custom Cursor ("The Headlight", fine pointer only) -->
+  <!-- Custom Headlight Cursor (fine pointer only) -->
   <div class="custom-cursor" id="custom-cursor" aria-hidden="true">
     <div class="cursor-headlight">
       <div class="cursor-dot"></div>
@@ -26,23 +26,26 @@
     <span class="cursor-label" id="cursor-label"></span>
   </div>
 
-  <!-- Preloader Screen -->
+  <!-- Preloader Screen with Centre Xenon Expansion Line -->
   <div class="preloader" id="preloader" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-    <div class="preloader-brand font-display">NOCTIS</div>
+    <div class="preloader-crest font-hud">STUTTGART — GERMANY</div>
+    <div class="preloader-brand font-display">PORSCHE</div>
     <div class="preloader-line-track">
       <div class="preloader-line-fill" id="preloader-line"></div>
     </div>
-    <div class="preloader-counter" id="preloader-counter">000</div>
+    <div class="preloader-counter font-hud" id="preloader-counter">000</div>
   </div>
 
   <!-- Site Navigation (Transparent, mix-blend-mode: difference, hides on scroll down) -->
   <header>
     <nav class="site-nav" id="site-nav" aria-label="Main Navigation">
-      <a href="#hero" class="nav-brand font-display" data-cursor="VIEW">NOCTIS</a>
+      <a href="#hero" class="nav-brand font-display" data-cursor="VIEW">PORSCHE</a>
       <ul class="nav-links">
+        <li><a href="#hero" class="nav-link" data-cursor="VIEW">OVERVIEW</a></li>
+        <li><a href="#cinema" class="nav-link" data-cursor="PLAY">THE DRIVE</a></li>
+        <li><a href="#dismantle" class="nav-link" data-cursor="VIEW">ENGINEERING</a></li>
         <li><a href="#lineup" class="nav-link" data-cursor="VIEW">MODELS</a></li>
-        <li><a href="#statement" class="nav-link" data-cursor="VIEW">TECHNOLOGY</a></li>
-        <li><a href="#reserve" class="nav-link" data-cursor="RESERVE">RESERVE</a></li>
+        <li><a href="#reserve" class="nav-link nav-link-highlight" data-cursor="RESERVE">COMMISSION</a></li>
       </ul>
     </nav>
   </header>
@@ -51,25 +54,43 @@
     <!-- ====================================================================
          SECTION 1 — HERO (Pinned Scrollytelling, ~600vh)
          ==================================================================== -->
-    <section id="hero" class="scrolly-wrapper" style="height: 600vh;" aria-label="NOCTIS Hero Introduction">
+    <section id="hero" class="scrolly-wrapper" style="height: 600vh;" aria-label="Porsche Hero Experience">
       <div class="scrolly-stage" id="hero-stage">
         <!-- Scroll-scrubbed image sequence canvas -->
         <canvas id="hero-canvas" class="stage-canvas"></canvas>
 
+        <!-- Optional background video loop layer (seamless switchable mode) -->
+        <video id="hero-video-bg" class="hero-video-layer" playsinline muted loop preload="none" poster="assets/videos/hero_cinematic_1_poster.webp">
+          <source src="assets/videos/hero_cinematic_1.mp4" type="video/mp4">
+        </video>
+
         <!-- Canvas fade to solid black over the last 5% of scroll -->
         <div class="hero-black-fade" id="hero-black-fade"></div>
 
+        <!-- Cinema Mode Switcher Pill (Top Right) -->
+        <div class="hero-mode-pill" id="hero-mode-pill">
+          <button type="button" class="mode-toggle-btn active" id="btn-mode-scrub" data-cursor="SELECT">
+            <span class="mode-dot"></span> SCROLL SCRUB
+          </button>
+          <button type="button" class="mode-toggle-btn" id="btn-mode-ambient" data-cursor="PLAY">
+            <span class="mode-dot"></span> AMBIENT VIDEO
+          </button>
+        </div>
+
         <!-- Text Chapters Overlay (Placed in empty sky, never over the car) -->
         <div class="hero-overlays">
-          <!-- Chapter 1 (0–12%) -->
+          <!-- Chapter 1 (0–14%) -->
           <article class="hero-chapter is-active" id="ch-1" data-ch="1">
             <div class="line-mask stagger-1">
-              <h1 class="hero-chapter-title font-display line-inner">NOCTIS</h1>
+              <span class="font-hud hero-eyebrow">DRIVEN BY DREAMS</span>
             </div>
             <div class="line-mask stagger-2">
-              <p class="hero-chapter-subline line-inner font-body">The city is asleep.</p>
+              <h1 class="hero-chapter-title font-display line-inner">PORSCHE</h1>
             </div>
             <div class="line-mask stagger-3">
+              <p class="hero-chapter-subline line-inner font-body">The city is asleep.</p>
+            </div>
+            <div class="line-mask stagger-4">
               <div class="hero-scroll-hint line-inner">
                 <span>SCROLL TO WAKE IT</span>
                 <span class="hint-pulse-line"></span>
@@ -80,28 +101,43 @@
           <!-- Chapter 2 (22–40%) -->
           <article class="hero-chapter" id="ch-2" data-ch="2">
             <div class="line-mask stagger-1">
+              <span class="font-hud hero-eyebrow">02 / WEISSACH HERITAGE</span>
+            </div>
+            <div class="line-mask stagger-2">
               <h2 class="hero-chapter-title font-display line-inner">It doesn't need the city's light.</h2>
+            </div>
+            <div class="line-mask stagger-3">
+              <p class="hero-chapter-subline line-inner font-body">Born on the racetrack. Formed in darkness.</p>
             </div>
           </article>
 
           <!-- Chapter 3 (50–68%) -->
           <article class="hero-chapter" id="ch-3" data-ch="3">
             <div class="line-mask stagger-1">
+              <span class="font-hud hero-eyebrow">03 / HD MATRIX LED</span>
+            </div>
+            <div class="line-mask stagger-2">
               <h2 class="hero-chapter-title font-display line-inner">It brings its own.</h2>
+            </div>
+            <div class="line-mask stagger-3">
+              <p class="hero-chapter-subline line-inner font-body">32,000 individually controlled micro-LED pixels carving the midnight highway.</p>
             </div>
           </article>
 
           <!-- Chapter 4 (80–100%) -->
           <article class="hero-chapter" id="ch-4" data-ch="4">
             <div class="line-mask stagger-1">
-              <h2 class="hero-chapter-title font-display line-inner">GT-E</h2>
+              <span class="font-hud hero-eyebrow">FLAGSHIP PERFORMANCE</span>
             </div>
             <div class="line-mask stagger-2">
-              <p class="specs-row-mini line-inner">0–100 KM/H 3.1S · 640 KM RANGE · DUAL MOTOR</p>
+              <h2 class="hero-chapter-title font-display line-inner">TAYCAN TURBO GT</h2>
             </div>
             <div class="line-mask stagger-3">
+              <p class="specs-row-mini line-inner">0–100 KM/H 2.2S · 554 KM RANGE · 760 KW (1,034 PS)</p>
+            </div>
+            <div class="line-mask stagger-4">
               <div class="line-inner">
-                <a href="#lineup" class="hero-cta-link" data-cursor="VIEW">Discover the GT-E →</a>
+                <a href="#lineup" class="hero-cta-link" data-cursor="VIEW">Explore The Lineup →</a>
               </div>
             </div>
           </article>
@@ -124,6 +160,10 @@
             <span class="hud-label">DISTANCE</span>
             <span class="hud-value" id="hud-distance-val">0.0 KM</span>
           </div>
+          <div class="hud-group">
+            <span class="hud-label">SYSTEM</span>
+            <span class="hud-value" style="color: var(--xenon);">800V ACTIVE</span>
+          </div>
         </aside>
 
         <!-- 1px Xenon Bottom Progress Line -->
@@ -136,24 +176,101 @@
     <!-- ====================================================================
          SECTION 2 — STATEMENT (Not Pinned, 100vh)
          ==================================================================== -->
-    <section id="statement" class="statement-section" aria-label="Engineering Statement">
-      <span class="font-hud statement-eyebrow">02 — ENGINEERING</span>
+    <section id="statement" class="statement-section" aria-label="Engineering Philosophy">
+      <span class="font-hud statement-eyebrow">02 — ENGINEERING PHILOSOPHY</span>
       <blockquote class="font-display statement-quote" id="statement-quote">
         <!-- Word tokens injected via main.js for scroll-scrubbed opacity reveal -->
         Every part was designed to disappear into one line of light.
       </blockquote>
+      <div class="statement-signature font-hud">
+        <span>F. A. PORSCHE DESIGN MANDATE</span>
+        <span class="signature-line"></span>
+        <span>STUTTGART — WEISSACH</span>
+      </div>
     </section>
 
     <!-- ====================================================================
-         SECTION 3 — DISMANTLE (Pinned Scrollytelling, ~350vh)
+         SECTION 3 — CINEMA THEATER (The Night Drive Experience, 100vh)
          ==================================================================== -->
-    <section id="dismantle" class="scrolly-wrapper" style="height: 350vh;" aria-label="Component Architecture">
+    <section id="cinema" class="cinema-section" aria-label="Cinematic Video Showcase">
+      <!-- 4K Video Background with dark contrast grade -->
+      <div class="cinema-media-wrap" id="cinema-media-wrap">
+        <video id="cinema-video" class="cinema-video" playsinline muted loop autoplay preload="metadata" poster="assets/videos/hero_cinematic_1_poster.webp">
+          <source src="assets/videos/hero_cinematic_1.mp4" type="video/mp4">
+        </video>
+        <div class="cinema-dark-overlay"></div>
+        <!-- Letterbox Bars (Cinematic 2.39:1 scope toggle) -->
+        <div class="letterbox-top"></div>
+        <div class="letterbox-bottom"></div>
+      </div>
+
+      <!-- Cinema Top Status Bar -->
+      <header class="cinema-header">
+        <div class="cinema-eyebrow-row">
+          <span class="cinema-rec-dot"></span>
+          <span class="font-hud">03 — THE NIGHT DRIVE / CINEMATIC 4K</span>
+          <span class="cinema-timecode font-hud" id="cinema-timecode">00:00:00 REC</span>
+        </div>
+        <h2 class="cinema-headline font-display">Pure cinematic immersion.</h2>
+      </header>
+
+      <!-- Scene Navigation & Sound Controls -->
+      <div class="cinema-controls-bar">
+        <div class="scene-pills-list" role="tablist" aria-label="Cinematic Scenes">
+          <button type="button" class="scene-pill-btn active" data-scene="0" data-cursor="SELECT">
+            <span class="scene-num">01</span> REAR LIGHT
+          </button>
+          <button type="button" class="scene-pill-btn" data-scene="1" data-cursor="SELECT">
+            <span class="scene-num">02</span> HIGH-SPEED TRACK
+          </button>
+          <button type="button" class="scene-pill-btn" data-scene="2" data-cursor="SELECT">
+            <span class="scene-num">03</span> SIDE PROFILE
+          </button>
+          <button type="button" class="scene-pill-btn" data-scene="3" data-cursor="SELECT">
+            <span class="scene-num">04</span> MECHANICAL DISMANTLE
+          </button>
+        </div>
+
+        <div class="cinema-actions-group">
+          <button type="button" class="cinema-action-btn" id="btn-cinema-play" data-cursor="PLAY" aria-label="Pause or Play video">
+            <span class="btn-icon">⏸</span> <span class="btn-text">PAUSE</span>
+          </button>
+          <button type="button" class="cinema-action-btn" id="btn-cinema-mute" data-cursor="SELECT" aria-label="Toggle Sound">
+            <span class="btn-icon">🔇</span> <span class="btn-text">UNMUTE</span>
+          </button>
+          <button type="button" class="cinema-action-btn" id="btn-cinema-scope" data-cursor="SELECT" aria-label="Toggle Cinema Scope Letterbox">
+            <span class="btn-icon">⬚</span> <span class="btn-text">CINEMA 2.39:1</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Scene Caption -->
+      <footer class="cinema-footer">
+        <div class="cinema-caption-box">
+          <span class="caption-title font-hud" id="cinema-caption-title">SCENE 01 / REAR LIGHT SIGNATURE</span>
+          <p class="caption-desc font-body" id="cinema-caption-desc">Continuous LED light strip illuminating the wet tarmac at midnight.</p>
+        </div>
+        <div class="cinema-audio-eq" aria-hidden="true">
+          <span class="eq-bar"></span>
+          <span class="eq-bar"></span>
+          <span class="eq-bar"></span>
+          <span class="eq-bar"></span>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 4 — DISMANTLE (Pinned Scrollytelling, ~350vh)
+         ==================================================================== -->
+    <section id="dismantle" class="scrolly-wrapper" style="height: 350vh;" aria-label="Component Engineering Architecture">
       <div class="scrolly-stage" id="dismantle-stage">
         <!-- Scroll-scrubbed dismantle image sequence canvas -->
         <canvas id="dismantle-canvas" class="stage-canvas"></canvas>
 
         <header class="dismantle-header">
+          <span class="font-hud dismantle-eyebrow">04 — ENGINEERING DECONSTRUCTED</span>
           <h2 class="dismantle-title font-display">Look closer.</h2>
+          <p class="dismantle-subtitle font-body">Weissach performance architecture, deconstructed layer by layer.</p>
         </header>
 
         <!-- Callouts Layer (SVG lines + pins + labels) -->
@@ -170,64 +287,136 @@
     </section>
 
     <!-- ====================================================================
-         SECTION 4 — LINEUP (Hover Accordion, Not Pinned, 100vh)
+         SECTION 5 — LINEUP (Hover Accordion, Not Pinned, 100vh)
          ==================================================================== -->
-    <section id="lineup" class="lineup-section" aria-label="NOCTIS Model Lineup">
+    <section id="lineup" class="lineup-section" aria-label="Porsche Model Lineup">
       <header class="lineup-header">
-        <span class="font-hud">03 — THE LINEUP</span>
+        <div class="lineup-header-top">
+          <span class="font-hud">05 — THE PORSCHE LINEUP</span>
+          <span class="font-hud text-dim">CLICK OR HOVER TO EXPLORE</span>
+        </div>
         <h2 class="lineup-title font-display">Five ways to drive the night.</h2>
       </header>
 
       <div class="lineup-accordion" id="lineup-accordion" role="tablist" aria-label="Vehicle Models">
-        <!-- Slides dynamically rendered or seeded via main.js/config.js -->
+        <!-- Slides dynamically rendered via main.js from PORSCHE_CONFIG -->
       </div>
     </section>
 
     <!-- ====================================================================
-         SECTION 5 — RESERVE (100vh, Centered)
+         SECTION 6 — RESERVE (100vh, Centered)
          ==================================================================== -->
-    <section id="reserve" class="reserve-section" aria-label="Vehicle Reservation">
+    <section id="reserve" class="reserve-section" aria-label="Vehicle Commissioning">
+      <span class="font-hud reserve-eyebrow">EXCLUSIVE ALLOCATION</span>
       <h2 class="reserve-headline font-display">Drive the night.</h2>
-      <p class="reserve-subline font-body">Production allocations for the NOCTIS portfolio are strictly limited. Secure your delivery position.</p>
-      <a href="#reserve" class="reserve-btn" data-cursor="RESERVE">RESERVE YOUR NOCTIS</a>
+      <p class="reserve-subline font-body">Bespoke production allocations for the Porsche portfolio are strictly managed. Connect with your Porsche Centre to secure delivery.</p>
+      <button type="button" class="reserve-btn" id="btn-open-commission" data-cursor="COMMISSION">
+        COMMISSION YOUR PORSCHE
+      </button>
+      <div class="reserve-details-row font-hud">
+        <span>FACTORY PICKUP IN STUTTGART</span>
+        <span class="dot-sep">·</span>
+        <span>EXCLUSIVE MANUFAKTUR OPTIONS</span>
+        <span class="dot-sep">·</span>
+        <span>WORLDWIDE WARRANTY</span>
+      </div>
     </section>
   </main>
+
+  <!-- ====================================================================
+       INTERACTIVE COMMISSION MODAL (Bespoke Configurator Preview)
+       ==================================================================== -->
+  <aside class="commission-modal" id="commission-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-panel">
+      <header class="modal-header">
+        <div class="modal-header-info">
+          <span class="font-hud text-dim">PORSCHE COMMISSIONING</span>
+          <h3 class="modal-title font-display" id="modal-title">TAYCAN TURBO GT</h3>
+        </div>
+        <button type="button" class="modal-close-btn" id="modal-close-btn" data-cursor="CLOSE" aria-label="Close dialog">✕</button>
+      </header>
+      
+      <div class="modal-body">
+        <div class="modal-preview-stage">
+          <img src="assets/cars/gt-e.webp" id="modal-car-img" alt="Selected Porsche model preview" class="modal-car-image">
+          <div class="modal-floor-line"></div>
+        </div>
+
+        <div class="modal-specs-row font-hud" id="modal-specs-row">
+          <!-- Dynamic specs injected here -->
+        </div>
+
+        <form class="modal-form" id="commission-form" onsubmit="event.preventDefault(); window.submitCommission();">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="form-name" class="font-hud">FULL NAME</label>
+              <input type="text" id="form-name" required placeholder="Alexandre de Weissach">
+            </div>
+            <div class="form-field">
+              <label for="form-email" class="font-hud">EMAIL ADDRESS</label>
+              <input type="email" id="form-email" required placeholder="porsche.owner@domain.com">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="form-centre" class="font-hud">PREFERRED PORSCHE CENTRE</label>
+              <select id="form-centre">
+                <option value="stuttgart">Porsche Centre Stuttgart-Zuffenhausen</option>
+                <option value="london">Porsche Centre Mayfair London</option>
+                <option value="newyork">Porsche Experience Center New York</option>
+                <option value="tokyo">Porsche Studio Ginza Tokyo</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="modal-submit-btn font-hud" data-cursor="SUBMIT">REQUEST PRIVATE ALLOCATION →</button>
+          <div class="modal-success-msg font-hud" id="modal-success-msg">
+            ✓ REQUEST RECEIVED. YOUR PORSCHE CONCIERGE WILL CONTACT YOU WITHIN 24 HOURS.
+          </div>
+        </form>
+      </div>
+    </div>
+  </aside>
 
   <!-- ====================================================================
        FOOTER
        ==================================================================== -->
   <footer class="site-footer">
     <div class="footer-top">
-      <div class="footer-wordmark font-display">NOCTIS</div>
+      <div class="footer-brand-col">
+        <div class="footer-wordmark font-display">PORSCHE</div>
+        <p class="footer-tagline font-hud">DRIVEN BY DREAMS. STUTTGART 1948–2026.</p>
+      </div>
       <div class="footer-links-grid">
         <div class="footer-col">
-          <span class="footer-col-title">MODELS</span>
-          <a href="#lineup" class="footer-link" data-cursor="VIEW">GT-E GRAND TOURER</a>
-          <a href="#lineup" class="footer-link" data-cursor="VIEW">S SPORT SEDAN</a>
-          <a href="#lineup" class="footer-link" data-cursor="VIEW">X COUPE SUV</a>
-          <a href="#lineup" class="footer-link" data-cursor="VIEW">R TRACK COUPE</a>
-          <a href="#lineup" class="footer-link" data-cursor="VIEW">ONE HYPERCAR</a>
+          <span class="footer-col-title font-hud">MODELS</span>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">TAYCAN TURBO GT</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">PANAMERA TURBO</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">CAYENNE TURBO GT</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">911 GT3 RS</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">MISSION X HYPERCAR</a>
         </div>
         <div class="footer-col">
-          <span class="footer-col-title">TECHNOLOGY</span>
-          <a href="#statement" class="footer-link" data-cursor="VIEW">AXIAL-FLUX POWERTRAIN</a>
-          <a href="#dismantle" class="footer-link" data-cursor="VIEW">CARBON MONOCOQUE</a>
-          <a href="#dismantle" class="footer-link" data-cursor="VIEW">LIGHT SIGNATURE</a>
-          <a href="#statement" class="footer-link" data-cursor="VIEW">TELEMETRY ARCHITECTURE</a>
+          <span class="footer-col-title font-hud">INNOVATION</span>
+          <a href="#cinema" class="footer-link" data-cursor="PLAY">THE 4K NIGHT DRIVE</a>
+          <a href="#dismantle" class="footer-link" data-cursor="VIEW">CARBON SAFETY CELL</a>
+          <a href="#dismantle" class="footer-link" data-cursor="VIEW">800V ARCHITECTURE</a>
+          <a href="#dismantle" class="footer-link" data-cursor="VIEW">MATRIX LIGHT TECHNOLOGY</a>
+          <a href="#statement" class="footer-link" data-cursor="VIEW">DESIGN PHILOSOPHY</a>
         </div>
         <div class="footer-col">
-          <span class="footer-col-title">NOCTIS</span>
-          <a href="#hero" class="footer-link" data-cursor="VIEW">PHILOSOPHY</a>
-          <a href="#reserve" class="footer-link" data-cursor="VIEW">ATELIERS</a>
-          <a href="#reserve" class="footer-link" data-cursor="VIEW">PRIVATE ALLOCATIONS</a>
-          <a href="#" class="footer-link" data-cursor="VIEW">PRESS</a>
+          <span class="footer-col-title font-hud">EXPERIENCE</span>
+          <a href="#reserve" class="footer-link" data-cursor="RESERVE">BESPOKE MANUFAKTUR</a>
+          <a href="#reserve" class="footer-link" data-cursor="VIEW">PORSCHE EXPERIENCE CENTRES</a>
+          <a href="#hero" class="footer-link" data-cursor="VIEW">MOTORSPORT HERITAGE</a>
+          <a href="#reserve" class="footer-link" data-cursor="VIEW">FACTORY COLLECTION</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 NOCTIS AUTOMOTIVE (FICTIONAL BRAND)</span>
-      <span>ALL RIGHTS RESERVED</span>
-      <span>00:00:00 UTC</span>
+      <span>© 2026 DR. ING. H.C. F. PORSCHE AG. CINEMATIC SHOWCASE SITE.</span>
+      <span>ALL SPECIFICATIONS ARE SUBJECT TO TECHNICAL VERIFICATION</span>
+      <span>STUTTGART — GERMANY</span>
     </div>
   </footer>
 
@@ -235,4 +424,3 @@
   <script src="main.js"></script>
 </body>
 </html>
-

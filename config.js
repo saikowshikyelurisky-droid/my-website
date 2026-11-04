@@ -1,25 +1,26 @@
 /**
- * NOCTIS Configuration
- * All section heights, chapter ranges, frame counts, frame paths,
- * callout positions and lineup car specs are centralized here.
+ * PORSCHE — Cinematic Visual Configuration
+ * Central source of truth for section heights, chapter ranges, frame sequences,
+ * cinematic video reels, telemetry, dismantle callouts, and vehicle lineup.
  */
 
-window.NOCTIS_CONFIG = {
+window.PORSCHE_CONFIG = {
   // Brand details
   brand: {
-    name: "NOCTIS",
-    tagline: "The city is asleep.",
+    name: "PORSCHE",
+    tagline: "Driven by Dreams.",
+    subline: "The city is asleep. We bring the light.",
     year: 2026,
   },
 
-  // Color tokens
+  // Color tokens (Luxury monochrome + Guard's Red & Xenon highlights)
   colors: {
-    asphalt: "#07080A",
-    graphite: "#121418",
+    asphalt: "#060709",
+    graphite: "#0E1014",
     fog: "#8A8F98",
     bone: "#EDEAE4",
     xenon: "#CFE3FF",
-    taillight: "#E1251B",
+    guardsRed: "#E1251B",
     hairline: "rgba(237, 234, 228, 0.12)",
   },
 
@@ -56,6 +57,7 @@ window.NOCTIS_CONFIG = {
   sections: {
     heroHeightVh: 600,
     statementHeightVh: 100,
+    cinemaHeightVh: 100,
     dismantleHeightVh: 350,
     lineupHeightVh: 100,
     reserveHeightVh: 100,
@@ -63,7 +65,6 @@ window.NOCTIS_CONFIG = {
 
   // Hero Scrollytelling Chapters & Telemetry
   hero: {
-    // Canvas fades to black over last 5% of scroll
     canvasFadeOutStart: 0.95,
     canvasFadeOutEnd: 1.00,
 
@@ -77,12 +78,11 @@ window.NOCTIS_CONFIG = {
         id: "ch-01",
         label: "01/04",
         startProgress: 0.00,
-        endProgress: 0.12,
-        title: "NOCTIS",
+        endProgress: 0.14,
+        title: "PORSCHE",
         subline: "The city is asleep.",
         hint: "SCROLL TO WAKE IT",
         alignment: "top-left",
-        // Positioned in empty sky, never over the car
         coords: { x: "8vw", y: "16vh" },
       },
       {
@@ -91,7 +91,7 @@ window.NOCTIS_CONFIG = {
         startProgress: 0.22,
         endProgress: 0.40,
         title: "It doesn't need the city's light.",
-        subline: "",
+        subline: "Engineered in Weissach.",
         alignment: "top-left",
         coords: { x: "8vw", y: "20vh" },
       },
@@ -101,7 +101,7 @@ window.NOCTIS_CONFIG = {
         startProgress: 0.50,
         endProgress: 0.68,
         title: "It brings its own.",
-        subline: "",
+        subline: "HD Matrix LED Architecture.",
         alignment: "top-left",
         coords: { x: "8vw", y: "20vh" },
       },
@@ -110,9 +110,9 @@ window.NOCTIS_CONFIG = {
         label: "04/04",
         startProgress: 0.80,
         endProgress: 1.00,
-        title: "GT-E",
-        specs: "0–100 KM/H 3.1S · 640 KM RANGE · DUAL MOTOR",
-        ctaText: "Discover the GT-E",
+        title: "TAYCAN TURBO GT",
+        specs: "0–100 KM/H 2.2S · 554 KM RANGE · 760 KW (1,034 PS)",
+        ctaText: "Discover the Model →",
         ctaHref: "#lineup",
         alignment: "top-left",
         coords: { x: "8vw", y: "18vh" },
@@ -120,55 +120,91 @@ window.NOCTIS_CONFIG = {
     ],
   },
 
+  // Cinematic Video Theater Section
+  cinema: {
+    eyebrow: "03 — THE NIGHT DRIVE",
+    headline: "Pure cinematic immersion.",
+    subline: "Shot in 4K resolution across urban nightscapes. Feel the precision, silence, and sudden surge of 1,000+ horsepower.",
+    scenes: [
+      {
+        id: "scene-1",
+        title: "SCENE 01 / REAR LIGHT SIGNATURE",
+        caption: "Continuous LED light strip illuminating the wet tarmac.",
+        src: "assets/videos/hero_cinematic_1.mp4",
+        poster: "assets/videos/hero_cinematic_1_poster.webp",
+      },
+      {
+        id: "scene-2",
+        title: "SCENE 02 / HIGH-SPEED TRACKING",
+        caption: "Sweeping camera arc transitioning from rear 3/4 to full profile.",
+        src: "assets/videos/hero_cinematic_2.mp4",
+        poster: "assets/videos/hero_cinematic_2_poster.webp",
+      },
+      {
+        id: "scene-3",
+        title: "SCENE 03 / SIDE PROFILE CRUISE",
+        caption: "Aerodynamic silhouette cutting through midnight fog at 120 km/h.",
+        src: "assets/videos/hero_cinematic_3.mp4",
+        poster: "assets/videos/hero_cinematic_3_poster.webp",
+      },
+      {
+        id: "scene-4",
+        title: "SCENE 04 / MECHANICAL DISMANTLE",
+        caption: "Exploded engineering flow revealing the structural battery and dual motors.",
+        src: "assets/videos/flow_dismantle.mp4",
+        poster: "assets/videos/flow_dismantle_poster.webp",
+      },
+    ],
+  },
+
   // Statement section
   statement: {
-    label: "02 — ENGINEERING",
+    label: "02 — ENGINEERING PHILOSOPHY",
     sentence: "Every part was designed to disappear into one line of light.",
   },
 
   // Dismantle Scrollytelling
   dismantle: {
     title: "Look closer.",
+    subtitle: "Weissach performance architecture, deconstructed layer by layer.",
     calloutsStartProgress: 0.70,
-    // Callouts appear sequentially after 70% progress
     callouts: [
       {
         id: "body",
-        label: "BODY",
-        description: "Carbon composite monocoque",
+        label: "MONOCOQUE",
+        description: "Carbon composite safety cell & lightweight aluminum skin",
         triggerProgress: 0.72,
-        // Relative coordinates on the 16:9 canvas space (0-100%)
-        pinX: 52, // Target dot on the carbon monocoque roof
+        pinX: 52,
         pinY: 26,
-        cardX: 62, // Callout text position
+        cardX: 62,
         cardY: 18,
       },
       {
         id: "battery",
-        label: "BATTERY",
-        description: "110 kWh structural pack",
+        label: "PERFORMANCE BATTERY",
+        description: "110 kWh 800V structural pack with active cooling",
         triggerProgress: 0.79,
-        pinX: 52, // Target dot on battery pack bottom plate
+        pinX: 52,
         pinY: 74,
         cardX: 64,
         cardY: 82,
       },
       {
         id: "drive",
-        label: "DRIVE",
-        description: "Dual axial-flux motors, 680 kW",
+        label: "DUAL PSM POWERTRAIN",
+        description: "Axial-flux motors delivering 760 kW / 1,034 PS",
         triggerProgress: 0.86,
-        pinX: 27, // Target dot on front motor & suspension assembly
+        pinX: 27,
         pinY: 60,
         cardX: 12,
         cardY: 68,
       },
       {
         id: "light",
-        label: "LIGHT",
-        description: "Single-line LED signature",
+        label: "HD MATRIX LIGHT",
+        description: "Razor-thin 32,000-pixel LED light bar signature",
         triggerProgress: 0.93,
-        pinX: 16, // Target dot on the front glowing xenon light bar
+        pinX: 16,
         pinY: 50,
         cardX: 10,
         cardY: 38,
@@ -176,91 +212,91 @@ window.NOCTIS_CONFIG = {
     ],
   },
 
-  // Lineup section
+  // Lineup section (5 Porsche models)
   lineup: {
-    eyebrow: "03 — THE LINEUP",
+    eyebrow: "04 — THE PORSCHE LINEUP",
     headline: "Five ways to drive the night.",
     defaultActiveIndex: 0,
     models: [
       {
-        id: "gt-e",
+        id: "taycan-turbo-gt",
         indexStr: "01",
-        name: "GT-E",
-        descriptor: "The grand tourer.",
+        name: "TAYCAN TURBO GT",
+        descriptor: "The all-electric grand tourer.",
         image: "assets/cars/gt-e.webp",
-        alt: "NOCTIS GT-E matte graphite electric grand tourer coupe side profile",
+        alt: "Porsche Taycan Turbo GT matte graphite grand tourer side profile",
         specs: [
-          { label: "RANGE", value: "640 KM" },
-          { label: "0–100 KM/H", value: "3.1 S" },
-          { label: "POWER", value: "680 KW" },
+          { label: "RANGE (WLTP)", value: "554 KM" },
+          { label: "0–100 KM/H", value: "2.2 S" },
+          { label: "MAX POWER", value: "760 KW (1,034 PS)" },
         ],
         swatches: ["#121418", "#EDEAE4", "#1C2331", "#07080A"],
-        swatchNames: ["Matte Graphite", "Satin Bone", "Midnight Blue", "Asphalt Void"],
-        linkText: "Configure →",
+        swatchNames: ["Volcano Grey Metallic", "Carrara White Metallic", "Gentian Blue Metallic", "Jet Black Metallic"],
+        linkText: "Configure Taycan →",
       },
       {
-        id: "s",
+        id: "panamera-turbo",
         indexStr: "02",
-        name: "S",
-        descriptor: "Four doors, no compromise.",
+        name: "PANAMERA TURBO E-HYBRID",
+        descriptor: "Executive sport sedan, uncompromising.",
         image: "assets/cars/s.webp",
-        alt: "NOCTIS S satin bone white electric sport sedan side profile",
+        alt: "Porsche Panamera Turbo E-Hybrid satin bone white sedan side profile",
         specs: [
-          { label: "RANGE", value: "600 KM" },
-          { label: "0–100 KM/H", value: "3.6 S" },
-          { label: "POWER", value: "520 KW" },
+          { label: "RANGE (COMBINED)", value: "600 KM" },
+          { label: "0–100 KM/H", value: "3.2 S" },
+          { label: "MAX POWER", value: "500 KW (680 PS)" },
         ],
         swatches: ["#EDEAE4", "#121418", "#2A2D34", "#07080A"],
-        swatchNames: ["Satin Bone", "Matte Graphite", "Stealth Grey", "Obsidian"],
-        linkText: "Configure →",
+        swatchNames: ["Chalk / Crayon", "Volcano Grey", "Aventurine Green", "Deep Black"],
+        linkText: "Configure Panamera →",
       },
       {
-        id: "x",
+        id: "cayenne-turbo-gt",
         indexStr: "03",
-        name: "X",
-        descriptor: "Higher, never heavier.",
+        name: "CAYENNE TURBO GT",
+        descriptor: "Higher, never heavier. The athlete.",
         image: "assets/cars/x.webp",
-        alt: "NOCTIS X midnight blue electric coupe SUV side profile",
+        alt: "Porsche Cayenne Turbo GT coupe midnight blue SUV side profile",
         specs: [
-          { label: "RANGE", value: "560 KM" },
-          { label: "0–100 KM/H", value: "4.2 S" },
-          { label: "POWER", value: "480 KW" },
+          { label: "TOP SPEED", value: "305 KM/H" },
+          { label: "0–100 KM/H", value: "3.3 S" },
+          { label: "MAX POWER", value: "485 KW (659 PS)" },
         ],
         swatches: ["#1C2433", "#121418", "#4A4E57", "#EDEAE4"],
-        swatchNames: ["Midnight Blue", "Graphite", "Storm Tint", "Satin Bone"],
-        linkText: "Configure →",
+        swatchNames: ["Midnight Blue Metallic", "Volcano Grey", "Arctic Grey", "Carrara White"],
+        linkText: "Configure Cayenne →",
       },
       {
-        id: "r",
+        id: "911-gt3-rs",
         indexStr: "04",
-        name: "R",
-        descriptor: "Built for the track.",
+        name: "911 GT3 RS",
+        descriptor: "Motorsport DNA. King of the Nürburgring.",
         image: "assets/cars/r.webp",
-        alt: "NOCTIS R satin black electric track coupe with rear wing side profile",
+        alt: "Porsche 911 GT3 RS satin black track coupe with rear wing side profile",
         specs: [
-          { label: "RANGE", value: "420 KM" },
-          { label: "0–100 KM/H", value: "2.4 S" },
-          { label: "POWER", value: "900 KW" },
+          { label: "DOWNFORCE (285 KM/H)", value: "860 KG" },
+          { label: "0–100 KM/H", value: "3.0 S" },
+          { label: "MAX POWER", value: "386 KW (525 PS)" },
         ],
         swatches: ["#0A0A0B", "#1A1C20", "#E1251B", "#40444C"],
-        swatchNames: ["Satin Black", "Exposed Carbon", "Apex Red", "Titanium"],
-        linkText: "Configure →",
+        swatchNames: ["Satin Black Carbon", "Exposed Carbon Weave", "Guards Red Accent", "GT Silver Metallic"],
+        linkText: "Configure GT3 RS →",
       },
       {
-        id: "one",
+        id: "mission-x",
         indexStr: "05",
-        name: "ONE",
-        descriptor: "The future, early.",
+        name: "MISSION X",
+        descriptor: "The hypercar of tomorrow, realized today.",
         image: "assets/cars/one.webp",
-        alt: "NOCTIS ONE liquid silver concept hypercar side profile",
+        alt: "Porsche Mission X liquid silver concept hypercar side profile",
         specs: [
-          { label: "RANGE", value: "CONCEPT" },
+          { label: "POWER TO WEIGHT", value: "1:1 KG/PS" },
           { label: "0–100 KM/H", value: "< 1.9 S" },
-          { label: "POWER", value: "1200 KW" },
+          { label: "VOLTAGE", value: "900V SYSTEM" },
         ],
         swatches: ["#D9DEE5", "#121418", "#CFE3FF", "#07080A"],
-        swatchNames: ["Liquid Silver", "Void Black", "Xenon Ion", "Asphalt"],
-        linkText: "Configure →",
+        swatchNames: ["Rocket Metallic Silver", "Carbon Core", "Electric Blue", "Obsidian"],
+        linkText: "Explore Concept →",
       },
     ],
   },
@@ -268,14 +304,16 @@ window.NOCTIS_CONFIG = {
   // Reserve section
   reserve: {
     headline: "Drive the night.",
-    subline: "Production allocations for the NOCTIS portfolio are strictly limited. Secure your delivery position.",
-    cta: "RESERVE YOUR NOCTIS",
+    subline: "Bespoke production allocations for the Porsche portfolio are strictly managed. Connect with your Porsche Centre to secure delivery.",
+    cta: "COMMISSION YOUR PORSCHE",
   },
 
   // Reduced motion static frame indices
   reducedMotion: {
-    heroFrames: [1, 209, 389, 598], // 0%, ~35%, ~65%, 100%
-    dismantleFrames: [1, 200], // first and last
+    heroFrames: [1, 209, 389, 598],
+    dismantleFrames: [1, 200],
   },
 };
 
+// Backwards-compatible alias
+window.NOCTIS_CONFIG = window.PORSCHE_CONFIG;

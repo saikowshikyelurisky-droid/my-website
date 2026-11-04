@@ -1,16 +1,16 @@
 /* ==========================================================================
-   NOCTIS — DESIGN TOKENS & RESET
-   Mood: A city in total blackout at night where the car's light is the only light.
+   PORSCHE — CINEMATIC VISUAL ENHANCEMENT
+   Mood: Total night immersion where the car's light is the only light in the world.
    Quiet, expensive, precise: huge empty space, few words, perfect motion.
    ========================================================================== */
 
 :root {
-  --asphalt: #07080A;
-  --graphite: #121418;
+  --asphalt: #060709;
+  --graphite: #0E1014;
   --fog: #8A8F98;
   --bone: #EDEAE4;
   --xenon: #CFE3FF;
-  --taillight: #E1251B;
+  --guardsRed: #E1251B;
   --hairline: rgba(237, 234, 228, 0.12);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --font-display: 'Archivo', -apple-system, sans-serif;
@@ -77,6 +77,10 @@ body {
   color: var(--fog);
 }
 
+.text-dim {
+  color: var(--fog);
+}
+
 /* ==========================================================================
    GRAIN OVERLAY (Fixed, flat noise tile, shifted ~8fps, 3.5% opacity, no vignette)
    ========================================================================== */
@@ -101,7 +105,8 @@ body {
   body:not(.reduced-motion) a,
   body:not(.reduced-motion) button,
   body:not(.reduced-motion) [role="button"],
-  body:not(.reduced-motion) input {
+  body:not(.reduced-motion) input,
+  body:not(.reduced-motion) select {
     cursor: none;
   }
 }
@@ -219,11 +224,18 @@ body {
   pointer-events: none;
 }
 
+.preloader-crest {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--fog);
+  margin-bottom: 0.75rem;
+}
+
 .preloader-brand {
-  font-size: clamp(32px, 5vw, 64px);
+  font-size: clamp(34px, 5.5vw, 72px);
   color: var(--bone);
   margin-bottom: 2rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .preloader-line-track {
@@ -251,7 +263,6 @@ body {
 }
 
 .preloader-counter {
-  font-family: var(--font-hud);
   font-size: 12px;
   letter-spacing: 0.15em;
   color: var(--fog);
@@ -284,7 +295,7 @@ body {
   font-stretch: 125%;
   font-weight: 400;
   font-size: 20px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   color: var(--bone);
   text-decoration: none;
 }
@@ -292,7 +303,7 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2.25rem;
   list-style: none;
 }
 
@@ -307,6 +318,11 @@ body {
 
 .nav-link:hover {
   color: var(--xenon);
+}
+
+.nav-link-highlight {
+  border-bottom: 1px solid var(--guardsRed);
+  padding-bottom: 2px;
 }
 
 /* ==========================================================================
@@ -329,14 +345,13 @@ body {
   transform: translateY(0%);
 }
 
-/* Stagger utilities */
 .stagger-1 > .line-inner { transition-delay: 0.00s; }
 .stagger-2 > .line-inner { transition-delay: 0.08s; }
 .stagger-3 > .line-inner { transition-delay: 0.16s; }
 .stagger-4 > .line-inner { transition-delay: 0.24s; }
 
 /* ==========================================================================
-   PINNED SCROLLYTELLING ARCHITECTURE (Hero & Dismantle)
+   SECTION 1 — HERO SCROLLYTELLING & VIDEO BG
    ========================================================================== */
 .scrolly-wrapper {
   position: relative;
@@ -363,6 +378,71 @@ body {
   height: 100%;
   display: block;
   z-index: 1;
+  transition: opacity 0.5s var(--ease);
+}
+
+.hero-video-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ease);
+}
+
+.hero-video-layer.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Top-right interactive mode pill */
+.hero-mode-pill {
+  position: absolute;
+  top: 2rem;
+  right: 2.5rem;
+  z-index: 30;
+  display: flex;
+  background-color: var(--graphite);
+  border: 1px solid var(--hairline);
+  padding: 4px;
+  gap: 4px;
+}
+
+.mode-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--fog);
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.mode-toggle-btn.active {
+  background-color: var(--asphalt);
+  color: var(--bone);
+  border: 1px solid var(--hairline);
+}
+
+.mode-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--fog);
+  transition: background-color 0.2s ease;
+}
+
+.mode-toggle-btn.active .mode-dot {
+  background-color: var(--xenon);
 }
 
 /* Bottom 1px Xenon Progress Line */
@@ -383,7 +463,6 @@ body {
   transition: width 0.05s linear;
 }
 
-/* Fade-to-black canvas overlay */
 .hero-black-fade {
   position: absolute;
   top: 0;
@@ -397,9 +476,6 @@ body {
   transition: opacity 0.1s linear;
 }
 
-/* ==========================================================================
-   SECTION 1 — HERO OVERLAYS & HUD
-   ========================================================================== */
 .hero-overlays {
   position: absolute;
   top: 0;
@@ -410,7 +486,6 @@ body {
   z-index: 10;
 }
 
-/* Chapter containers: placed in sky, never over the car */
 .hero-chapter {
   position: absolute;
   top: 16vh;
@@ -427,10 +502,16 @@ body {
   pointer-events: auto;
 }
 
+.hero-eyebrow {
+  margin-bottom: 0.5rem;
+  color: var(--xenon);
+}
+
 .hero-chapter-title {
   font-size: clamp(48px, 6.5vw, 110px);
   color: var(--bone);
   margin-bottom: 0.75rem;
+  letter-spacing: 0.04em;
 }
 
 .hero-chapter-subline {
@@ -439,7 +520,6 @@ body {
   margin-bottom: 1.5rem;
 }
 
-/* Scroll hint with 1px pulsing line */
 .hero-scroll-hint {
   display: inline-flex;
   align-items: center;
@@ -462,7 +542,6 @@ body {
   50% { opacity: 1; transform: scaleX(1); }
 }
 
-/* GT-E Chapter Specs & CTA */
 .specs-row-mini {
   font-family: var(--font-hud);
   font-size: clamp(11px, 0.8vw, 12px);
@@ -490,7 +569,6 @@ body {
   color: var(--xenon);
 }
 
-/* Left-edge HUD */
 .hero-left-hud {
   position: absolute;
   left: 2.5rem;
@@ -524,7 +602,7 @@ body {
 .hud-tick {
   width: 2px;
   height: 10px;
-  background-color: var(--taillight);
+  background-color: var(--guardsRed);
 }
 
 .hud-value {
@@ -535,7 +613,7 @@ body {
 }
 
 /* ==========================================================================
-   SECTION 2 — STATEMENT (100vh, centered)
+   SECTION 2 — STATEMENT
    ========================================================================== */
 .statement-section {
   position: relative;
@@ -568,20 +646,276 @@ body {
   transition: opacity 0.25s var(--ease);
 }
 
+.statement-signature {
+  margin-top: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: var(--fog);
+}
+
+.signature-line {
+  width: 32px;
+  height: 1px;
+  background-color: var(--hairline);
+}
+
 /* ==========================================================================
-   SECTION 3 — DISMANTLE (350vh, Pinned Canvas + 4 Callouts)
+   SECTION 3 — CINEMA THEATER (100vh, Full-Screen Video Theater)
+   ========================================================================== */
+.cinema-section {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem 4vw;
+  background-color: var(--asphalt);
+  border-top: 1px solid var(--hairline);
+  overflow: hidden;
+}
+
+.cinema-media-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.cinema-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cinema-dark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(6, 7, 9, 0.45);
+  pointer-events: none;
+}
+
+/* Cinematic 2.39:1 Letterbox Scope */
+.letterbox-top,
+.letterbox-bottom {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: var(--asphalt);
+  z-index: 3;
+  transition: height 0.6s var(--ease);
+  pointer-events: none;
+}
+
+.letterbox-top { top: 0; }
+.letterbox-bottom { bottom: 0; }
+
+.cinema-section.scope-active .letterbox-top,
+.cinema-section.scope-active .letterbox-bottom {
+  height: 10vh;
+}
+
+/* Cinema overlays */
+.cinema-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cinema-eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.cinema-rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--guardsRed);
+  animation: blinkRec 1.2s infinite ease-in-out;
+}
+
+@keyframes blinkRec {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.cinema-timecode {
+  color: var(--bone);
+  border-left: 1px solid var(--hairline);
+  padding-left: 0.85rem;
+}
+
+.cinema-headline {
+  font-size: clamp(28px, 4vw, 64px);
+  color: var(--bone);
+}
+
+.cinema-controls-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background-color: var(--asphalt);
+  border: 1px solid var(--hairline);
+  padding: 0.85rem 1.25rem;
+}
+
+.scene-pills-list {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.scene-pill-btn {
+  background: transparent;
+  border: 1px solid var(--hairline);
+  color: var(--fog);
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s var(--ease);
+}
+
+.scene-pill-btn:hover {
+  border-color: var(--xenon);
+  color: var(--bone);
+}
+
+.scene-pill-btn.active {
+  background-color: var(--bone);
+  color: var(--asphalt);
+  border-color: var(--bone);
+}
+
+.scene-num {
+  font-weight: 600;
+}
+
+.cinema-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cinema-action-btn {
+  background: transparent;
+  border: 1px solid var(--hairline);
+  color: var(--bone);
+  font-family: var(--font-hud);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.cinema-action-btn:hover {
+  border-color: var(--xenon);
+  color: var(--xenon);
+}
+
+.cinema-footer {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.cinema-caption-box {
+  max-width: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.caption-title {
+  color: var(--xenon);
+}
+
+.caption-desc {
+  font-size: 14px;
+  color: var(--bone);
+}
+
+.cinema-audio-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+}
+
+.eq-bar {
+  width: 2px;
+  background-color: var(--xenon);
+  height: 4px;
+  animation: eqJump 0.8s infinite ease-in-out alternate;
+}
+
+.eq-bar:nth-child(1) { animation-delay: 0.1s; height: 12px; }
+.eq-bar:nth-child(2) { animation-delay: 0.3s; height: 18px; }
+.eq-bar:nth-child(3) { animation-delay: 0.2s; height: 8px; }
+.eq-bar:nth-child(4) { animation-delay: 0.4s; height: 14px; }
+
+@keyframes eqJump {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+/* ==========================================================================
+   SECTION 4 — DISMANTLE SCROLLYTELLING
    ========================================================================== */
 .dismantle-header {
   position: absolute;
-  top: 6vw;
+  top: 5vw;
   left: 6vw;
   z-index: 10;
   pointer-events: none;
+  max-width: 500px;
+}
+
+.dismantle-eyebrow {
+  color: var(--xenon);
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 .dismantle-title {
   font-size: clamp(36px, 5vw, 76px);
   color: var(--bone);
+  margin-bottom: 0.5rem;
+}
+
+.dismantle-subtitle {
+  font-size: 15px;
+  color: var(--fog);
 }
 
 .callouts-layer {
@@ -606,7 +940,6 @@ body {
   transform: translateY(0);
 }
 
-/* Connecting hairline from car dot to label */
 .callout-svg {
   position: absolute;
   top: 0;
@@ -646,7 +979,7 @@ body {
 }
 
 /* ==========================================================================
-   SECTION 4 — LINEUP (Hover Accordion, 100vh)
+   SECTION 5 — LINEUP ACCORDION
    ========================================================================== */
 .lineup-section {
   position: relative;
@@ -664,6 +997,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.lineup-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .lineup-title {
@@ -704,16 +1043,14 @@ body {
   border-right: none;
 }
 
-/* Slide width distribution */
 .lineup-slide:not(.is-active) {
-  flex-grow: 1; /* about 12vw */
+  flex-grow: 1;
 }
 
 .lineup-slide.is-active {
-  flex-grow: 4.5; /* about 52vw */
+  flex-grow: 4.5;
 }
 
-/* Closed state elements */
 .slide-closed-view {
   position: absolute;
   top: 0;
@@ -749,7 +1086,6 @@ body {
   margin-bottom: 2rem;
 }
 
-/* Closed car image preview: cropped tight on front light bar, 25% brightness & greyscale */
 .slide-bg-crop {
   position: absolute;
   top: 0;
@@ -767,7 +1103,6 @@ body {
   opacity: 0;
 }
 
-/* Open slide elements */
 .slide-open-view {
   position: absolute;
   top: 0;
@@ -806,7 +1141,6 @@ body {
   color: var(--fog);
 }
 
-/* Car image inside open slide: sits at 72% floor line, slides in 6% from left */
 .slide-car-stage {
   position: absolute;
   top: 0;
@@ -839,7 +1173,6 @@ body {
   transform: translate(-50%, -72%) translateX(-6%);
 }
 
-/* Shared floor line at 72% of slide height */
 .slide-floor-line {
   position: absolute;
   top: 72%;
@@ -850,14 +1183,13 @@ body {
   z-index: 1;
 }
 
-/* Open slide bottom content: specs, swatches, configure link */
 .slide-open-bottom {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 600px;
+  max-width: 620px;
 }
 
 .slide-specs-grid {
@@ -904,7 +1236,6 @@ body {
 .color-swatch-box {
   width: 12px;
   height: 12px;
-  border-radius: 0;
   border: none;
   cursor: pointer;
   position: relative;
@@ -915,30 +1246,26 @@ body {
   outline-offset: 2px;
 }
 
-.slide-config-link {
+.slide-config-btn {
   font-family: var(--font-hud);
   font-size: 12px;
   letter-spacing: 0.14em;
   color: var(--bone);
-  text-decoration: none;
+  background: transparent;
+  border: none;
   border-bottom: 1px solid var(--hairline);
   padding-bottom: 2px;
+  cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.slide-config-link:hover {
+.slide-config-btn:hover {
   color: var(--xenon);
   border-color: var(--xenon);
 }
 
-/* Focus visible styling */
-.lineup-slide:focus-visible {
-  outline: 1px solid var(--xenon);
-  outline-offset: -1px;
-}
-
 /* ==========================================================================
-   SECTION 5 — RESERVE (100vh, Centered)
+   SECTION 6 — RESERVE
    ========================================================================== */
 .reserve-section {
   position: relative;
@@ -954,6 +1281,11 @@ body {
   border-top: 1px solid var(--hairline);
 }
 
+.reserve-eyebrow {
+  margin-bottom: 1rem;
+  color: var(--xenon);
+}
+
 .reserve-headline {
   font-size: clamp(48px, 7vw, 120px);
   color: var(--bone);
@@ -961,11 +1293,10 @@ body {
 }
 
 .reserve-subline {
-  margin-bottom: 3.5rem;
-  max-width: 48ch;
+  margin-bottom: 3rem;
+  max-width: 52ch;
 }
 
-/* Button styled as thin xenon outline with mono label */
 .reserve-btn {
   position: relative;
   display: inline-flex;
@@ -979,11 +1310,11 @@ body {
   font-size: 12px;
   letter-spacing: 0.16em;
   text-decoration: none;
+  cursor: pointer;
   overflow: hidden;
   transition: background-color 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
 }
 
-/* Left 2px taillight-red tick appearing on hover */
 .reserve-btn::before {
   content: '';
   position: absolute;
@@ -991,7 +1322,7 @@ body {
   left: 0;
   width: 2px;
   height: 100%;
-  background-color: var(--taillight);
+  background-color: var(--guardsRed);
   opacity: 0;
   transform: scaleY(0);
   transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
@@ -1008,9 +1339,201 @@ body {
   transform: scaleY(1);
 }
 
-.reserve-btn:focus-visible {
-  outline: 2px solid var(--xenon);
-  outline-offset: 4px;
+.reserve-details-row {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: var(--fog);
+  font-size: 11px;
+}
+
+.dot-sep {
+  color: var(--hairline);
+}
+
+/* ==========================================================================
+   COMMISSIONING MODAL (Bespoke Configurator Preview)
+   ========================================================================== */
+.commission-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+}
+
+.commission-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(6, 7, 9, 0.85);
+}
+
+.modal-panel {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 720px;
+  background-color: var(--graphite);
+  border: 1px solid var(--hairline);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  transform: translateY(20px);
+  transition: transform 0.4s var(--ease);
+}
+
+.commission-modal.is-open .modal-panel {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 1rem;
+}
+
+.modal-title {
+  font-size: 32px;
+  color: var(--bone);
+  margin-top: 4px;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: 1px solid var(--hairline);
+  color: var(--fog);
+  font-size: 14px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  border-color: var(--bone);
+  color: var(--bone);
+}
+
+.modal-preview-stage {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--asphalt);
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+}
+
+.modal-car-image {
+  max-width: 80%;
+  max-height: 140px;
+  object-fit: contain;
+}
+
+.modal-floor-line {
+  position: absolute;
+  bottom: 25px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--hairline);
+}
+
+.modal-specs-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  background-color: var(--asphalt);
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--hairline);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 10px;
+  color: var(--fog);
+}
+
+.form-field input,
+.form-field select {
+  background-color: var(--asphalt);
+  border: 1px solid var(--hairline);
+  color: var(--bone);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: var(--xenon);
+}
+
+.modal-submit-btn {
+  margin-top: 0.5rem;
+  padding: 14px 20px;
+  background-color: var(--bone);
+  color: var(--asphalt);
+  border: none;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-submit-btn:hover {
+  background-color: var(--xenon);
+}
+
+.modal-success-msg {
+  display: none;
+  padding: 12px;
+  background-color: var(--asphalt);
+  border: 1px solid var(--guardsRed);
+  color: var(--bone);
+  font-size: 11px;
+  letter-spacing: 0.12em;
 }
 
 /* ==========================================================================
@@ -1035,7 +1558,13 @@ body {
 .footer-wordmark {
   font-size: 32px;
   color: var(--bone);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
+}
+
+.footer-tagline {
+  font-size: 11px;
+  color: var(--fog);
+  margin-top: 0.5rem;
 }
 
 .footer-links-grid {
@@ -1051,7 +1580,6 @@ body {
 }
 
 .footer-col-title {
-  font-family: var(--font-hud);
   font-size: 11px;
   letter-spacing: 0.16em;
   color: var(--bone);
@@ -1084,7 +1612,7 @@ body {
 }
 
 /* ==========================================================================
-   MOBILE RESPONSIVENESS (< 768px)
+   RESPONSIVE DESIGN (< 768px Mobile & Tablet)
    ========================================================================== */
 @media (max-width: 768px) {
   .site-nav {
@@ -1093,6 +1621,12 @@ body {
   
   .nav-links {
     gap: 1.25rem;
+  }
+
+  .hero-mode-pill {
+    top: auto;
+    bottom: 2rem;
+    right: 1.5rem;
   }
   
   .hero-chapter {
@@ -1104,7 +1638,30 @@ body {
   
   .hero-left-hud {
     left: 1.5rem;
-    bottom: 1.5rem;
+    bottom: 5.5rem;
+  }
+
+  .cinema-section {
+    padding: 2rem 1.5rem;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .cinema-controls-bar {
+    padding: 1rem;
+  }
+
+  .scene-pills-list {
+    gap: 0.35rem;
+  }
+
+  .scene-pill-btn {
+    font-size: 9px;
+    padding: 5px 8px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
   
   /* Mobile Lineup: stack slides vertically as 72px rows */
@@ -1128,7 +1685,7 @@ body {
   }
   
   .lineup-slide.is-active {
-    height: 520px;
+    height: 540px;
     flex-grow: 0;
   }
   
@@ -1179,7 +1736,6 @@ body {
 
 /* ==========================================================================
    ACCESSIBILITY: PREFERS-REDUCED-MOTION
-   No pinning, show one static frame per chapter with simple fades.
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -1212,4 +1768,3 @@ body {
     cursor: pointer !important;
   }
 }
-

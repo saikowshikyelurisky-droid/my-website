@@ -1,15 +1,15 @@
 /**
- * NOCTIS — Main Engine
- * Vanilla JavaScript implementation of scrollytelling image scrubbers,
- * custom headlight cursor, accordion lineup, HUD telemetry, and film grain.
+ * PORSCHE — Cinematic Visual Engine
+ * Scrollytelling canvas scrubbers, 4K ambient video theater, custom headlight cursor,
+ * interactive model accordion, live SVG telemetry callouts, and commissioning modal.
  */
 
 (function () {
   'use strict';
 
-  const cfg = window.NOCTIS_CONFIG;
+  const cfg = window.PORSCHE_CONFIG || window.NOCTIS_CONFIG;
   if (!cfg) {
-    console.error('NOCTIS: config.js must be loaded before main.js');
+    console.error('PORSCHE: config.js must be loaded before main.js');
     return;
   }
 
@@ -18,7 +18,6 @@
     document.body.classList.add('reduced-motion');
   }
 
-  // Mobile viewport detection
   function isMobileViewport() {
     return window.innerWidth < 768;
   }
@@ -32,7 +31,6 @@
     const ctx = grainCanvas.getContext('2d');
     if (!ctx) return;
 
-    // Create a 128x128 offscreen noise tile
     const tileSize = 128;
     const tile = document.createElement('canvas');
     tile.width = tileSize;
@@ -43,10 +41,10 @@
 
     for (let i = 0; i < data.length; i += 4) {
       const val = (Math.random() * 255) | 0;
-      data[i] = val;     // R
-      data[i + 1] = val; // G
-      data[i + 2] = val; // B
-      data[i + 3] = 255; // A
+      data[i] = val;
+      data[i + 1] = val;
+      data[i + 2] = val;
+      data[i + 3] = 255;
     }
     tCtx.putImageData(imgData, 0, 0);
 
@@ -57,7 +55,6 @@
     window.addEventListener('resize', resizeGrain, { passive: true });
     resizeGrain();
 
-    // Redraw pattern with random shift ~8 times per second (125ms interval)
     let lastTime = 0;
     const interval = 1000 / (cfg.motion.grainFps || 8);
 
@@ -111,7 +108,6 @@
       }, 120);
     });
 
-    // Cursor tracking with lerp
     function cursorLoop() {
       const lerp = cfg.motion.cursorLerp || 0.18;
       cursorX += (mouseX - cursorX) * lerp;
@@ -122,13 +118,11 @@
     }
     requestAnimationFrame(cursorLoop);
 
-    // Hover detection delegation
     document.addEventListener('mouseover', (e) => {
       const target = e.target.closest('[data-cursor], a, button, .lineup-slide');
       if (target) {
         cursor.classList.add('is-hovered');
 
-        // Lineup slide specific cursor
         if (target.classList.contains('lineup-slide')) {
           const isOpen = target.classList.contains('is-active');
           currentLabel = isOpen ? 'CONFIGURE' : 'OPEN';
@@ -208,17 +202,13 @@
 
     const initialHeroTarget = cfg.frames.hero.initialPreloadCount || 40;
     let initialLoaded = 0;
-    let initialRevealed = false;
 
-    // Helper to decode an Image
     function loadSingleFrame(src) {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = src;
         if (img.decode) {
-          img.decode()
-            .then(() => resolve(img))
-            .catch(() => resolve(img)); // Fallback if decode errors
+          img.decode().then(() => resolve(img)).catch(() => resolve(img));
         } else {
           img.onload = () => resolve(img);
           img.onerror = () => resolve(img);
@@ -226,7 +216,6 @@
       });
     }
 
-    // Step 1: Preload initial hero frames (1..40)
     const initialPromises = [];
     for (let i = 1; i <= initialHeroTarget; i++) {
       const src = getFramePath('hero', i);
@@ -241,7 +230,6 @@
     }
 
     Promise.all(initialPromises).then(() => {
-      initialRevealed = true;
       if (preloader) {
         preloader.classList.add('flash');
         setTimeout(() => {
@@ -252,10 +240,8 @@
         onInitialComplete();
       }
 
-      // Step 2: Continue background loading of remaining Hero frames (41..598)
       loadRemainingFrames('hero', initialHeroTarget + 1, heroStore.totalCount, heroStore, () => {
         heroStore.isReady = true;
-        // Step 3: Preload Dismantle frames (1..200) in order
         loadRemainingFrames('dismantle', 1, dismantleStore.totalCount, dismantleStore, () => {
           dismantleStore.isReady = true;
         });
@@ -280,7 +266,6 @@
           }));
         }
         Promise.all(batchPromises).then(() => {
-          // Schedule next batch on idle
           if ('requestIdleCallback' in window) {
             requestIdleCallback(nextBatch);
           } else {
@@ -292,12 +277,10 @@
     }
   }
 
-  // Draw nearest loaded frame if current frame is still loading
   function getNearestFrame(store, requestedIndex) {
     if (store.images[requestedIndex] && store.images[requestedIndex].complete) {
       return store.images[requestedIndex];
     }
-    // Search outwards
     for (let offset = 1; offset < store.totalCount; offset++) {
       const prev = requestedIndex - offset;
       if (prev >= 0 && store.images[prev] && store.images[prev].complete) {
@@ -312,7 +295,7 @@
   }
 
   /* ==========================================================================
-     5. CANVAS RENDERING ENGINE (Cover-fit on landscape, contain-fit on portrait)
+     5. CANVAS RENDERING ENGINE
      ========================================================================== */
   function renderFrameToCanvas(canvas, ctx, img) {
     if (!canvas || !ctx || !img) return;
@@ -340,14 +323,12 @@
     let drawW, drawH, drawX, drawY;
 
     if (isLandscape) {
-      // Cover-fit
       const scale = Math.max(cW / imgW, cH / imgH);
       drawW = imgW * scale;
       drawH = imgH * scale;
       drawX = (cW - drawW) * 0.5;
       drawY = (cH - drawH) * 0.5;
     } else {
-      // Portrait: Contain-fit, vertically centered on --asphalt so car is never cropped
       const scale = Math.min(cW / imgW, cH / imgH);
       drawW = imgW * scale;
       drawH = imgH * scale;
@@ -360,11 +341,14 @@
   }
 
   /* ==========================================================================
-     6. SECTION 1 — HERO SCROLLYTELLING
+     6. SECTION 1 — HERO SCROLLYTELLING & AMBIENT CINEMA TOGGLE
      ========================================================================== */
   function initHeroScrolly() {
     const wrapper = document.getElementById('hero');
     const canvas = document.getElementById('hero-canvas');
+    const videoBg = document.getElementById('hero-video-bg');
+    const btnScrub = document.getElementById('btn-mode-scrub');
+    const btnAmbient = document.getElementById('btn-mode-ambient');
     if (!wrapper || !canvas) return;
     const ctx = canvas.getContext('2d');
 
@@ -374,9 +358,31 @@
     const hudSpeed = document.getElementById('hud-speed-val');
     const hudDistance = document.getElementById('hud-distance-val');
 
+    let isAmbientMode = false;
+
+    if (btnScrub && btnAmbient && videoBg) {
+      btnScrub.addEventListener('click', () => {
+        isAmbientMode = false;
+        btnScrub.classList.add('active');
+        btnAmbient.classList.remove('active');
+        videoBg.classList.remove('is-active');
+        videoBg.pause();
+        canvas.style.opacity = '1';
+      });
+
+      btnAmbient.addEventListener('click', () => {
+        isAmbientMode = true;
+        btnAmbient.classList.add('active');
+        btnScrub.classList.remove('active');
+        videoBg.classList.add('is-active');
+        videoBg.play().catch(() => {});
+        canvas.style.opacity = '0';
+      });
+    }
+
     const chapters = [
-      { el: document.getElementById('ch-1'), start: 0.00, end: 0.15, label: '01/04' },
-      { el: document.getElementById('ch-2'), start: 0.20, end: 0.42, label: '02/04' },
+      { el: document.getElementById('ch-1'), start: 0.00, end: 0.16, label: '01/04' },
+      { el: document.getElementById('ch-2'), start: 0.22, end: 0.42, label: '02/04' },
       { el: document.getElementById('ch-3'), start: 0.48, end: 0.70, label: '03/04' },
       { el: document.getElementById('ch-4'), start: 0.78, end: 1.00, label: '04/04' },
     ];
@@ -390,14 +396,11 @@
       const scrollDist = wrapper.offsetHeight - window.innerHeight;
       const progress = Math.min(Math.max(-rect.top / (scrollDist || 1), 0), 1);
 
-      // Target frame 0..597
       targetFrame = Math.round(progress * (heroStore.totalCount - 1));
-
-      // Lerp frame
       currentFrame += (targetFrame - currentFrame) * (cfg.motion.frameLerp || 0.15);
       const roundedFrame = Math.round(currentFrame);
 
-      if (roundedFrame !== lastDrawnFrame) {
+      if (!isAmbientMode && roundedFrame !== lastDrawnFrame) {
         const img = getNearestFrame(heroStore, roundedFrame);
         if (img) {
           renderFrameToCanvas(canvas, ctx, img);
@@ -405,18 +408,15 @@
         }
       }
 
-      // Progress bar fill
       if (progressFill) {
         progressFill.style.width = (progress * 100) + '%';
       }
 
-      // Fade canvas to solid black over last 5% (0.95 -> 1.00)
       if (blackFade) {
         const fadeProg = Math.min(Math.max((progress - 0.95) / 0.05, 0), 1);
         blackFade.style.opacity = fadeProg;
       }
 
-      // Chapter activation
       let activeChapterLabel = '01/04';
       chapters.forEach((ch) => {
         if (!ch.el) return;
@@ -429,7 +429,6 @@
         }
       });
 
-      // Left-edge HUD telemetry
       if (hudChapter) hudChapter.textContent = activeChapterLabel;
       if (hudSpeed) {
         const speed = Math.round(progress * (cfg.hero.telemetry.speedMaxKmH || 118));
@@ -446,7 +445,7 @@
     requestAnimationFrame(updateHero);
 
     window.addEventListener('resize', () => {
-      lastDrawnFrame = -1; // force redraw on resize
+      lastDrawnFrame = -1;
     }, { passive: true });
   }
 
@@ -473,7 +472,6 @@
     function updateStatementScroll() {
       const rect = statementSection.getBoundingClientRect();
       const viewportH = window.innerHeight;
-      // Calculate progress while section passes center of viewport
       const start = viewportH * 0.85;
       const end = viewportH * 0.25;
       const progress = Math.min(Math.max((start - rect.top) / (start - end), 0), 1);
@@ -481,11 +479,7 @@
       const totalWords = wordSpans.length;
       wordSpans.forEach((span, idx) => {
         const wordThreshold = idx / totalWords;
-        if (progress > wordThreshold) {
-          span.style.opacity = '1';
-        } else {
-          span.style.opacity = '0.15';
-        }
+        span.style.opacity = progress > wordThreshold ? '1' : '0.15';
       });
     }
 
@@ -494,7 +488,108 @@
   }
 
   /* ==========================================================================
-     8. SECTION 3 — DISMANTLE SCROLLYTELLING & 4 CALLOUTS
+     8. SECTION 3 — CINEMA THEATER (The Night Drive Experience)
+     ========================================================================== */
+  function initCinemaTheater() {
+    const cinemaSection = document.getElementById('cinema');
+    const cinemaVideo = document.getElementById('cinema-video');
+    const timecodeEl = document.getElementById('cinema-timecode');
+    const btnPlay = document.getElementById('btn-cinema-play');
+    const btnMute = document.getElementById('btn-cinema-mute');
+    const btnScope = document.getElementById('btn-cinema-scope');
+    const captionTitle = document.getElementById('cinema-caption-title');
+    const captionDesc = document.getElementById('cinema-caption-desc');
+    const scenePills = document.querySelectorAll('.scene-pill-btn');
+
+    if (!cinemaSection || !cinemaVideo) return;
+
+    const scenes = cfg.cinema.scenes || [];
+    let currentSceneIdx = 0;
+
+    // Timecode timer loop
+    function updateTimecode() {
+      if (cinemaVideo && timecodeEl) {
+        const cur = cinemaVideo.currentTime || 0;
+        const mins = String(Math.floor(cur / 60)).padStart(2, '0');
+        const secs = String(Math.floor(cur % 60)).padStart(2, '0');
+        const frames = String(Math.floor((cur % 1) * 24)).padStart(2, '0');
+        timecodeEl.textContent = `${mins}:${secs}:${frames} REC`;
+      }
+      requestAnimationFrame(updateTimecode);
+    }
+    requestAnimationFrame(updateTimecode);
+
+    // Scene Switcher
+    function selectScene(index) {
+      if (index < 0 || index >= scenes.length) return;
+      currentSceneIdx = index;
+      const sc = scenes[index];
+
+      scenePills.forEach((p, idx) => {
+        p.classList.toggle('active', idx === currentSceneIdx);
+      });
+
+      if (captionTitle) captionTitle.textContent = sc.title;
+      if (captionDesc) captionDesc.textContent = sc.caption;
+
+      cinemaVideo.style.opacity = '0.3';
+      setTimeout(() => {
+        cinemaVideo.src = sc.src;
+        cinemaVideo.poster = sc.poster;
+        cinemaVideo.load();
+        cinemaVideo.play().catch(() => {});
+        cinemaVideo.style.opacity = '1';
+      }, 200);
+    }
+
+    scenePills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const idx = parseInt(pill.getAttribute('data-scene'), 10);
+        selectScene(idx);
+      });
+    });
+
+    // Play / Pause toggle
+    if (btnPlay) {
+      btnPlay.addEventListener('click', () => {
+        if (cinemaVideo.paused) {
+          cinemaVideo.play();
+          btnPlay.querySelector('.btn-icon').textContent = '⏸';
+          btnPlay.querySelector('.btn-text').textContent = 'PAUSE';
+        } else {
+          cinemaVideo.pause();
+          btnPlay.querySelector('.btn-icon').textContent = '▶';
+          btnPlay.querySelector('.btn-text').textContent = 'PLAY';
+        }
+      });
+    }
+
+    // Mute / Unmute toggle
+    if (btnMute) {
+      btnMute.addEventListener('click', () => {
+        cinemaVideo.muted = !cinemaVideo.muted;
+        if (cinemaVideo.muted) {
+          btnMute.querySelector('.btn-icon').textContent = '🔇';
+          btnMute.querySelector('.btn-text').textContent = 'UNMUTE';
+        } else {
+          btnMute.querySelector('.btn-icon').textContent = '🔊';
+          btnMute.querySelector('.btn-text').textContent = 'MUTED';
+        }
+      });
+    }
+
+    // Cinema Scope 2.39:1 Letterbox toggle
+    if (btnScope) {
+      btnScope.addEventListener('click', () => {
+        cinemaSection.classList.toggle('scope-active');
+        const isActive = cinemaSection.classList.contains('scope-active');
+        btnScope.querySelector('.btn-text').textContent = isActive ? 'FULL VIEW' : 'CINEMA 2.39:1';
+      });
+    }
+  }
+
+  /* ==========================================================================
+     9. SECTION 4 — DISMANTLE SCROLLYTELLING & CALLOUTS
      ========================================================================== */
   function initDismantleScrolly() {
     const wrapper = document.getElementById('dismantle');
@@ -507,7 +602,6 @@
     const calloutElementsContainer = document.getElementById('callout-elements');
     const calloutSvg = document.getElementById('callout-svg');
 
-    // Build callout DOM elements from config
     const calloutsData = cfg.dismantle.callouts || [];
     calloutElementsContainer.innerHTML = '';
 
@@ -516,13 +610,11 @@
       item.className = 'callout-item';
       item.id = `callout-${data.id}`;
 
-      // Xenon pin dot on vehicle part
       const dot = document.createElement('div');
       dot.className = 'callout-pin-dot';
       dot.style.left = data.pinX + '%';
       dot.style.top = data.pinY + '%';
 
-      // Text block
       const content = document.createElement('div');
       content.className = 'callout-content';
       content.style.left = data.cardX + '%';
@@ -543,15 +635,9 @@
       item.appendChild(content);
       calloutElementsContainer.appendChild(item);
 
-      return {
-        data,
-        item,
-        dot,
-        content,
-      };
+      return { data, item, dot, content };
     });
 
-    // Draw 1px hairlines connecting pin dots to labels
     function updateCalloutLines() {
       if (!calloutSvg) return;
       const layerRect = calloutLayer.getBoundingClientRect();
@@ -565,11 +651,10 @@
         const px = (c.data.pinX / 100) * w;
         const py = (c.data.pinY / 100) * h;
         const cx = (c.data.cardX / 100) * w;
-        const cy = (c.data.cardY / 100) * h + 14; // align with label text baseline
+        const cy = (c.data.cardY / 100) * h + 14;
 
-        // Crisp 1px orthogonal hairline
         const midX = (px + cx) / 2;
-        svgHtml += `<path d="M ${px} ${py} L ${midX} ${py} L ${cx} ${cy}" stroke="rgba(207,227,255,0.4)" stroke-width="1" fill="none" />`;
+        svgHtml += `<path d="M ${px} ${py} L ${midX} ${py} L ${cx} ${cy}" stroke="rgba(207,227,255,0.45)" stroke-width="1" fill="none" />`;
       });
       calloutSvg.innerHTML = svgHtml;
     }
@@ -599,17 +684,12 @@
         progressFill.style.width = (progress * 100) + '%';
       }
 
-      // Callout triggers (after 70% progress, fading in one by one)
       let needsSvgUpdate = false;
       calloutDOMs.forEach((c) => {
         const wasVisible = c.item.classList.contains('is-visible');
         const isVisible = progress >= c.data.triggerProgress;
         if (isVisible !== wasVisible) {
-          if (isVisible) {
-            c.item.classList.add('is-visible');
-          } else {
-            c.item.classList.remove('is-visible');
-          }
+          c.item.classList.toggle('is-visible', isVisible);
           needsSvgUpdate = true;
         }
       });
@@ -630,7 +710,7 @@
   }
 
   /* ==========================================================================
-     9. SECTION 4 — LINEUP ACCORDION (Debounced Hover, Keyboard, Mobile)
+     10. SECTION 5 — LINEUP ACCORDION (Debounced Hover & Commission Modal)
      ========================================================================== */
   function initLineupAccordion() {
     const accordion = document.getElementById('lineup-accordion');
@@ -651,12 +731,10 @@
       slide.setAttribute('aria-label', `${model.name} — ${model.descriptor}`);
       slide.setAttribute('tabindex', '0');
 
-      // Shared floor line at 72%
       const floorLine = document.createElement('div');
       floorLine.className = 'slide-floor-line';
       slide.appendChild(floorLine);
 
-      // Closed state view
       const closedView = document.createElement('div');
       closedView.className = 'slide-closed-view';
 
@@ -672,7 +750,6 @@
       closedView.appendChild(rotatedName);
       slide.appendChild(closedView);
 
-      // Closed background cropped image
       const bgCrop = document.createElement('img');
       bgCrop.className = 'slide-bg-crop';
       bgCrop.src = model.image;
@@ -680,7 +757,6 @@
       bgCrop.loading = 'lazy';
       slide.appendChild(bgCrop);
 
-      // Open state car image stage
       const carStage = document.createElement('div');
       carStage.className = 'slide-car-stage';
       const carImg = document.createElement('img');
@@ -691,7 +767,6 @@
       carStage.appendChild(carImg);
       slide.appendChild(carStage);
 
-      // Open state full details
       const openView = document.createElement('div');
       openView.className = 'slide-open-view';
 
@@ -712,7 +787,6 @@
       const openBottom = document.createElement('div');
       openBottom.className = 'slide-open-bottom';
 
-      // 3-column specs grid
       const specsGrid = document.createElement('div');
       specsGrid.className = 'slide-specs-grid';
       model.specs.forEach((s) => {
@@ -729,7 +803,6 @@
         specsGrid.appendChild(cell);
       });
 
-      // Actions row (swatches & configure link)
       const actionsRow = document.createElement('div');
       actionsRow.className = 'slide-actions-row';
 
@@ -742,20 +815,24 @@
         sw.title = (model.swatchNames && model.swatchNames[sIdx]) || hex;
         sw.addEventListener('click', (e) => {
           e.stopPropagation();
-          swatchesRow.querySelectorAll('.color-swatch-box').forEach((box) => box.classList.remove('is-active'));
+          swatchesRow.querySelectorAll('.color-swatch-box').forEach((b) => b.classList.remove('is-active'));
           sw.classList.add('is-active');
         });
         swatchesRow.appendChild(sw);
       });
 
-      const configLink = document.createElement('a');
-      configLink.href = '#reserve';
-      configLink.className = 'slide-config-link';
-      configLink.textContent = model.linkText || 'Configure →';
-      configLink.setAttribute('data-cursor', 'CONFIGURE');
+      const configBtn = document.createElement('button');
+      configBtn.type = 'button';
+      configBtn.className = 'slide-config-btn font-hud';
+      configBtn.textContent = model.linkText || 'Configure Model →';
+      configBtn.setAttribute('data-cursor', 'CONFIGURE');
+      configBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.openCommission(idx);
+      });
 
       actionsRow.appendChild(swatchesRow);
-      actionsRow.appendChild(configLink);
+      actionsRow.appendChild(configBtn);
 
       openBottom.appendChild(specsGrid);
       openBottom.appendChild(actionsRow);
@@ -764,7 +841,6 @@
       openView.appendChild(openBottom);
       slide.appendChild(openView);
 
-      // Event handlers: debounced hover (80ms)
       slide.addEventListener('mouseenter', () => {
         if (isMobileViewport()) return;
         clearTimeout(hoverTimeout);
@@ -777,12 +853,10 @@
         clearTimeout(hoverTimeout);
       });
 
-      // Click / Tap
       slide.addEventListener('click', () => {
         setActiveSlide(idx);
       });
 
-      // Keyboard arrow navigation
       slide.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
           e.preventDefault();
@@ -812,7 +886,6 @@
       });
     }
 
-    // Scroll into view reveal stagger (slides rise 40px and fade in one after another)
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -834,16 +907,81 @@
   }
 
   /* ==========================================================================
-     10. INITIALIZATION
+     11. COMMISSIONING MODAL
+     ========================================================================== */
+  function initCommissionModal() {
+    const modal = document.getElementById('commission-modal');
+    const backdrop = document.getElementById('modal-backdrop');
+    const closeBtn = document.getElementById('modal-close-btn');
+    const openBtn = document.getElementById('btn-open-commission');
+    const modalTitle = document.getElementById('modal-title');
+    const modalImg = document.getElementById('modal-car-img');
+    const specsRow = document.getElementById('modal-specs-row');
+    const successMsg = document.getElementById('modal-success-msg');
+
+    if (!modal) return;
+
+    window.openCommission = function (modelIdx = 0) {
+      const models = cfg.lineup.models || [];
+      const m = models[modelIdx] || models[0];
+
+      if (modalTitle) modalTitle.textContent = m.name;
+      if (modalImg) {
+        modalImg.src = m.image;
+        modalImg.alt = m.alt;
+      }
+
+      if (specsRow) {
+        specsRow.innerHTML = '';
+        m.specs.forEach((s) => {
+          const col = document.createElement('div');
+          col.innerHTML = `<span class="text-dim" style="display:block;font-size:9px;">${s.label}</span><strong>${s.value}</strong>`;
+          specsRow.appendChild(col);
+        });
+      }
+
+      if (successMsg) successMsg.style.display = 'none';
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (openBtn) openBtn.addEventListener('click', () => window.openCommission(0));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+        closeModal();
+      }
+    });
+
+    window.submitCommission = function () {
+      if (successMsg) {
+        successMsg.style.display = 'block';
+        setTimeout(closeModal, 2200);
+      }
+    };
+  }
+
+  /* ==========================================================================
+     12. INITIALIZATION
      ========================================================================== */
   window.addEventListener('DOMContentLoaded', () => {
     initFilmGrain();
     initCustomCursor();
     initNavigation();
     initStatementSection();
+    initCinemaTheater();
     initLineupAccordion();
+    initCommissionModal();
 
-    // Start preloader and scrollytelling sequences
     preloadSequence(() => {
       initHeroScrolly();
       initDismantleScrolly();
@@ -851,4 +989,3 @@
   });
 
 })();
-
