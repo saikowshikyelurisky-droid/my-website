@@ -92,7 +92,7 @@ body {
   height: 100vh;
   pointer-events: none;
   z-index: 9000;
-  opacity: 0.035;
+  opacity: 0.008;
 }
 
 /* ==========================================================================
@@ -379,6 +379,7 @@ body {
   display: block;
   z-index: 1;
   transition: opacity 0.5s var(--ease);
+  image-rendering: auto;
 }
 
 .hero-video-layer {

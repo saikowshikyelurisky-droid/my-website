@@ -31,7 +31,7 @@ window.PORSCHE_CONFIG = {
     frameLerp: 0.15,
     hoverDebounceMs: 80,
     grainFps: 8,
-    grainOpacity: 0.035,
+    grainOpacity: 0.008,
   },
 
   // Frame sequences

@@ -203,15 +203,51 @@
     const initialHeroTarget = cfg.frames.hero.initialPreloadCount || 40;
     let initialLoaded = 0;
 
+    let completed = false;
+    function finishPreloader() {
+      if (completed) return;
+      completed = true;
+      if (preloader) {
+        preloader.classList.add('flash');
+        setTimeout(() => {
+          preloader.classList.add('is-finished');
+          if (onInitialComplete) onInitialComplete();
+          if (window.location.hash) {
+            const targetEl = document.querySelector(window.location.hash);
+            if (targetEl) targetEl.scrollIntoView();
+          }
+        }, 150);
+      } else if (onInitialComplete) {
+        onInitialComplete();
+        if (window.location.hash) {
+          const targetEl = document.querySelector(window.location.hash);
+          if (targetEl) targetEl.scrollIntoView();
+        }
+      }
+
+      loadRemainingFrames('hero', initialHeroTarget + 1, heroStore.totalCount, heroStore, () => {
+        heroStore.isReady = true;
+      });
+      loadRemainingFrames('dismantle', 6, dismantleStore.totalCount, dismantleStore, () => {
+        dismantleStore.isReady = true;
+      });
+    }
+
+    // Safety fallback: reveal after 2.5s regardless of network speed
+    setTimeout(finishPreloader, 2500);
+
     function loadSingleFrame(src) {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = src;
+        const timer = setTimeout(() => resolve(img), 2000);
         if (img.decode) {
-          img.decode().then(() => resolve(img)).catch(() => resolve(img));
+          img.decode()
+            .then(() => { clearTimeout(timer); resolve(img); })
+            .catch(() => { clearTimeout(timer); resolve(img); });
         } else {
-          img.onload = () => resolve(img);
-          img.onerror = () => resolve(img);
+          img.onload = () => { clearTimeout(timer); resolve(img); };
+          img.onerror = () => { clearTimeout(timer); resolve(img); };
         }
       });
     }
@@ -228,25 +264,15 @@
       });
       initialPromises.push(p);
     }
-
-    Promise.all(initialPromises).then(() => {
-      if (preloader) {
-        preloader.classList.add('flash');
-        setTimeout(() => {
-          preloader.classList.add('is-finished');
-          if (onInitialComplete) onInitialComplete();
-        }, 150);
-      } else if (onInitialComplete) {
-        onInitialComplete();
-      }
-
-      loadRemainingFrames('hero', initialHeroTarget + 1, heroStore.totalCount, heroStore, () => {
-        heroStore.isReady = true;
-        loadRemainingFrames('dismantle', 1, dismantleStore.totalCount, dismantleStore, () => {
-          dismantleStore.isReady = true;
-        });
+    for (let i = 1; i <= 5; i++) {
+      const src = getFramePath('dismantle', i);
+      const p = loadSingleFrame(src).then((img) => {
+        dismantleStore.images[i - 1] = img;
       });
-    });
+      initialPromises.push(p);
+    }
+
+    Promise.all(initialPromises).then(finishPreloader);
 
     function loadRemainingFrames(type, startIdx, endIdx, store, onComplete) {
       let curr = startIdx;
@@ -300,7 +326,7 @@
   function renderFrameToCanvas(canvas, ctx, img) {
     if (!canvas || !ctx || !img) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     const rect = canvas.getBoundingClientRect();
     const targetW = Math.round(rect.width * dpr);
     const targetH = Math.round(rect.height * dpr);
@@ -316,6 +342,8 @@
     const imgH = img.naturalHeight || img.height || 900;
 
     ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.fillStyle = cfg.colors.asphalt;
     ctx.fillRect(0, 0, cW, cH);
 

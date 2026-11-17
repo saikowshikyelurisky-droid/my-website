@@ -1,15 +1,33 @@
-# Video source files & zip archives
+# Original master video footage & extracted source archives (PRESERVED LOCALLY ONLY)
+/*.mp4
 *.zip
-*.mp4
 CLIP1 FRAME.ZIP/
 CLIP 2 FRAME.ZIP/
 CLIP 3 FRAME.ZIP/
 FLOW CLIP FRAME/
 
-# Python helper scripts & cache
-convert_frames.py
+# Local backups & restoration workspaces (NEVER committed to git)
+*_backup*/
+assets_backup*/
+assets/frames/*backup*/
+assets_restored_lossless/
+
+# Python & Node helper test scripts
+*.py
+capture_*.js
+test_*.js
+*.png
 __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+.chrome_tmp/
 
+# Track required web assets
+!assets/videos/*.mp4
+!assets/videos/*.webp
+!assets/cars/*.webp
+!assets/frames/**/*.webp
+
+# Exclude any backup videos inside assets/videos
+assets/videos/*backup*
