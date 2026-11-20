@@ -497,6 +497,10 @@ body {
   transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
 }
 
+#ch-1 {
+  max-width: 820px;
+}
+
 .hero-chapter.is-active {
   opacity: 1;
   visibility: visible;
@@ -1630,7 +1634,8 @@ body {
     right: 1.5rem;
   }
   
-  .hero-chapter {
+  .hero-chapter,
+  #ch-1 {
     top: 12vh;
     left: 6vw;
     right: 6vw;
